@@ -14,7 +14,7 @@ const program = new Command();
 program
     .name("setup-next-project")
     .description("CLI to quickly create a pre-configured Next.js project")
-    .version("1.9.0");
+    .version("1.9.1");
 
 program
     .argument("[project-name]", "Project name")

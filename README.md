@@ -1,5 +1,7 @@
 # Setup Next Project
 
+[![npm version](https://badge.fury.io/js/setup-next-project.svg)](https://badge.fury.io/js/setup-next-project) [![npm downloads](https://img.shields.io/npm/dm/setup-next-project.svg)](https://www.npmjs.com/package/setup-next-project) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 CLI pour créer rapidement un projet Next.js pré-configuré avec les meilleures pratiques et vos outils préférés.
 
 ## Installation et utilisation
