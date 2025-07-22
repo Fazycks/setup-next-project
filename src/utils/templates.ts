@@ -11,15 +11,15 @@ export interface Template {
 }
 
 export async function getAvailableTemplates(): Promise<Template[]> {
-    // Utiliser le répertoire templates du projet CLI
-    // On cherche le dossier templates à partir du répertoire du CLI
+    // Use the CLI project's templates directory
+    // We look for the templates folder from the CLI directory
     let templatesDir: string;
 
     if (process.cwd().includes("setup-next-project")) {
-        // Si on exécute depuis le répertoire du CLI
+        // If we're executing from the CLI directory
         templatesDir = path.join(process.cwd(), "templates");
     } else {
-        // Si on exécute le CLI installé globalement, on utilise le répertoire du module
+        // If we're executing the globally installed CLI, use the module directory
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = dirname(__filename);
         templatesDir = path.join(__dirname, "../../templates");
@@ -29,24 +29,25 @@ export async function getAvailableTemplates(): Promise<Template[]> {
         {
             id: "basic",
             name: "Basic",
-            description: "Next.js avec TypeScript et Tailwind CSS",
+            description: "Next.js with TypeScript and Tailwind CSS",
             path: path.join(templatesDir, "basic"),
         },
         {
             id: "fullstack",
             name: "Full Stack",
-            description: "Next.js avec Prisma, NextAuth et base de données",
+            description: "Next.js with Prisma, NextAuth and database",
             path: path.join(templatesDir, "fullstack"),
         },
         {
             id: "ecommerce",
             name: "E-commerce",
-            description: "Template e-commerce avec Stripe et gestion produits",
+            description:
+                "E-commerce template with Stripe and product management",
             path: path.join(templatesDir, "ecommerce"),
         },
     ];
 
-    // Filtrer les templates qui existent réellement
+    // Filter templates that actually exist
     const existingTemplates = [];
     for (const template of templates) {
         if (await fs.pathExists(template.path)) {

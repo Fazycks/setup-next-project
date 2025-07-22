@@ -13,13 +13,13 @@ const program = new Command();
 
 program
     .name("setup-next-project")
-    .description("CLI pour créer rapidement un projet Next.js pré-configuré")
-    .version("1.5.0");
+    .description("CLI to quickly create a pre-configured Next.js project")
+    .version("1.6.0");
 
 program
-    .argument("[project-name]", "Nom du projet")
-    .option("-t, --template <template>", "Template à utiliser")
-    .option("-y, --yes", "Utiliser les valeurs par défaut")
+    .argument("[project-name]", "Project name")
+    .option("-t, --template <template>", "Template to use")
+    .option("-y, --yes", "Use default values")
     .action(async (projectName, options) => {
         try {
             console.log(chalk.cyan.bold("\n🚀 Setup Next Project\n"));
@@ -27,57 +27,57 @@ program
             let finalProjectName = projectName;
             let selectedTemplate = options.template;
 
-            // Si pas de nom de projet fourni, demander
+            // If no project name provided, ask for it
             if (!finalProjectName) {
                 const { name } = await inquirer.prompt([
                     {
                         type: "input",
                         name: "name",
-                        message: "Quel est le nom de votre projet ?",
-                        default: "mon-projet-next",
+                        message: "What is your project name?",
+                        default: "my-next-project",
                         validate: validateProjectName,
                     },
                 ]);
                 finalProjectName = name;
             }
 
-            // Valider le nom du projet
+            // Validate project name
             const validationResult = validateProjectName(finalProjectName);
             if (validationResult !== true) {
                 console.error(chalk.red(`❌ ${validationResult}`));
                 process.exit(1);
             }
 
-            // Vérifier si le dossier existe déjà
+            // Check if folder already exists
             const projectPath = path.resolve(process.cwd(), finalProjectName);
             if (fs.existsSync(projectPath)) {
                 const { overwrite } = await inquirer.prompt([
                     {
                         type: "confirm",
                         name: "overwrite",
-                        message: `Le dossier "${finalProjectName}" existe déjà. Voulez-vous le remplacer ?`,
+                        message: `The folder "${finalProjectName}" already exists. Do you want to replace it?`,
                         default: false,
                     },
                 ]);
 
                 if (!overwrite) {
-                    console.log(chalk.yellow("❌ Opération annulée."));
+                    console.log(chalk.yellow("❌ Operation cancelled."));
                     process.exit(0);
                 }
 
                 await fs.remove(projectPath);
             }
 
-            // Obtenir les templates disponibles
+            // Get available templates
             const templates = await getAvailableTemplates();
 
-            // Si pas de template spécifié et pas de mode --yes, demander
+            // If no template specified and not --yes mode, ask for it
             if (!selectedTemplate && !options.yes) {
                 const { template } = await inquirer.prompt([
                     {
                         type: "list",
                         name: "template",
-                        message: "Quel template voulez-vous utiliser ?",
+                        message: "Which template would you like to use?",
                         choices: templates.map((t) => ({
                             name: `${t.name} - ${t.description}`,
                             value: t.id,
@@ -87,24 +87,22 @@ program
                 selectedTemplate = template;
             }
 
-            // Template par défaut si pas spécifié
+            // Default template if not specified
             if (!selectedTemplate) {
                 selectedTemplate = templates[0]?.id || "basic";
             }
 
-            // Créer le projet
+            // Create project
             await createProject({
                 projectName: finalProjectName,
                 template: selectedTemplate,
                 projectPath,
-                autoInstall: true, // Installation toujours activée
+                autoInstall: true, // Installation always enabled
             });
 
-            // Le projet est créé et les dépendances sont installées automatiquement
+            // The project is created and dependencies are installed automatically
         } catch (error) {
-            console.error(
-                chalk.red("\n❌ Erreur lors de la création du projet :"),
-            );
+            console.error(chalk.red("\n❌ Error creating project:"));
             console.error(
                 chalk.red(
                     error instanceof Error ? error.message : String(error),

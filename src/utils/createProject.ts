@@ -12,7 +12,7 @@ export interface CreateProjectOptions {
     autoInstall?: boolean;
 }
 
-// Dossiers et fichiers à exclure lors de la copie de templates
+// Folders and files to exclude when copying templates
 const EXCLUDED_ITEMS = [
     "node_modules",
     ".git",
@@ -35,7 +35,7 @@ async function copyTemplateFiles(
 
     for (const item of items) {
         if (EXCLUDED_ITEMS.includes(item)) {
-            continue; // Ignorer les éléments exclus
+            continue; // Ignore excluded items
         }
 
         const sourceItemPath = path.join(sourcePath, item);
@@ -57,33 +57,33 @@ export async function createProject(
 ): Promise<void> {
     const { projectName, template, projectPath } = options;
 
-    const spinner = ora("Création du projet...").start();
+    const spinner = ora("Creating project...").start();
 
     try {
-        // Obtenir le template
+        // Get template
         const templateData = await getTemplate(template);
         if (!templateData) {
-            throw new Error(`Template "${template}" introuvable.`);
+            throw new Error(`Template "${template}" not found.`);
         }
 
-        spinner.text = "Copie des fichiers du template...";
+        spinner.text = "Copying template files...";
 
-        // Créer le dossier du projet
+        // Create project folder
         await fs.ensureDir(projectPath);
 
-        // Vérifier si le template existe physiquement
+        // Check if template physically exists
         if (await fs.pathExists(templateData.path)) {
-            // Copier les fichiers du template en excluant certains dossiers
+            // Copy template files excluding certain folders
             await copyTemplateFiles(templateData.path, projectPath);
         } else {
             throw new Error(
-                `Le dossier template "${templateData.path}" n'existe pas.`,
+                `Template folder "${templateData.path}" does not exist.`,
             );
         }
 
-        spinner.text = "Mise à jour du package.json...";
+        spinner.text = "Updating package.json...";
 
-        // Mettre à jour le package.json avec le nom du projet
+        // Update package.json with project name
         const packageJsonPath = path.join(projectPath, "package.json");
         if (await fs.pathExists(packageJsonPath)) {
             const packageJson = await fs.readJson(packageJsonPath);
@@ -91,52 +91,48 @@ export async function createProject(
             await fs.writeJson(packageJsonPath, packageJson, { spaces: 2 });
         }
 
-        spinner.succeed(chalk.green("Projet créé avec succès !"));
+        spinner.succeed(chalk.green("Project created successfully!"));
 
-        // Initialisation Git
+        // Git initialization
         await initializeGitRepository(projectPath);
 
-        // Installation automatique des dépendances si demandée
+        // Automatic dependency installation if requested
         if (options.autoInstall !== false) {
             await installDependencies(projectPath, projectName);
         }
     } catch (error) {
-        spinner.fail(chalk.red("Erreur lors de la création du projet"));
+        spinner.fail(chalk.red("Error creating project"));
         throw error;
     }
 }
 
 async function initializeGitRepository(projectPath: string): Promise<void> {
-    const spinner = ora("Initialisation du repository Git...").start();
+    const spinner = ora("Initializing Git repository...").start();
 
     try {
-        // Initialiser le repo Git
+        // Initialize Git repo
         await runCommand("git init", projectPath);
 
-        // Ajouter tous les fichiers
+        // Add all files
         await runCommand("git add .", projectPath);
 
-        // Faire le premier commit
+        // Make first commit
         await runCommand(
             'git commit -m "Initial commit from setup-next-project"',
             projectPath,
         );
 
-        spinner.succeed(chalk.green("✅ Repository Git initialisé !"));
+        spinner.succeed(chalk.green("✅ Git repository initialized!"));
 
-        console.log(chalk.cyan("🔗 Prêt pour GitHub Desktop ou push manuel"));
+        console.log(chalk.cyan("🔗 Ready for GitHub Desktop or manual push"));
     } catch (error) {
-        spinner.warn(chalk.yellow("⚠️  Initialisation Git échouée"));
-        console.log(
-            chalk.gray(
-                "Vous pouvez initialiser Git manuellement si nécessaire",
-            ),
-        );
+        spinner.warn(chalk.yellow("⚠️  Git initialization failed"));
+        console.log(chalk.gray("You can initialize Git manually if needed"));
 
-        // Ne pas faire échouer le processus pour une erreur Git
+        // Don't fail the process for a Git error
         console.log(
             chalk.gray(
-                `Erreur: ${
+                `Error: ${
                     error instanceof Error ? error.message : String(error)
                 }`,
             ),
@@ -148,41 +144,39 @@ async function installDependencies(
     projectPath: string,
     projectName: string,
 ): Promise<void> {
-    const spinner = ora("Détection du gestionnaire de paquets...").start();
+    const spinner = ora("Detecting package manager...").start();
 
     try {
-        // Détecter le gestionnaire de paquets disponible
+        // Detect available package manager
         const packageManager = await detectPackageManager();
 
-        spinner.text = `Installation des dépendances avec ${packageManager.name}...`;
+        spinner.text = `Installing dependencies with ${packageManager.name}...`;
         spinner.color = "blue";
 
-        // Installer les dépendances
+        // Install dependencies
         await runCommand(packageManager.installCommand, projectPath);
 
         spinner.succeed(
             chalk.green(
-                `✅ Dépendances installées avec ${packageManager.name} !`,
+                `✅ Dependencies installed with ${packageManager.name}!`,
             ),
         );
 
-        console.log(chalk.cyan("\n🎉 Projet prêt ! Commandes disponibles :"));
+        console.log(chalk.cyan("\n🎉 Project ready! Available commands:"));
         console.log(chalk.white(`  cd ${projectName}`));
         console.log(chalk.white(`  ${packageManager.runCommand} dev`));
     } catch (error) {
-        spinner.warn(chalk.yellow("⚠️  Installation automatique échouée"));
+        spinner.warn(chalk.yellow("⚠️  Automatic installation failed"));
         console.log(
-            chalk.yellow(
-                "Vous pouvez installer manuellement les dépendances avec :",
-            ),
+            chalk.yellow("You can install dependencies manually with:"),
         );
         console.log(chalk.white(`  cd ${projectName}`));
-        console.log(chalk.white("  pnpm install # ou npm install"));
+        console.log(chalk.white("  pnpm install # or npm install"));
 
-        // Ne pas faire échouer tout le processus pour une erreur d'installation
+        // Don't fail the entire process for an installation error
         console.log(
             chalk.gray(
-                `Erreur: ${
+                `Error: ${
                     error instanceof Error ? error.message : String(error)
                 }`,
             ),

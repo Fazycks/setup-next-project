@@ -1,31 +1,31 @@
 export function validateProjectName(name: string): true | string {
     if (!name || name.trim().length === 0) {
-        return "Le nom du projet ne peut pas être vide.";
+        return "Project name cannot be empty.";
     }
 
     if (name.length > 214) {
-        return "Le nom du projet ne peut pas dépasser 214 caractères.";
+        return "Project name cannot exceed 214 characters.";
     }
 
     if (name.toLowerCase() !== name) {
-        return "Le nom du projet doit être en minuscules.";
+        return "Project name must be lowercase.";
     }
 
     if (name.startsWith(".") || name.startsWith("_")) {
-        return 'Le nom du projet ne peut pas commencer par "." ou "_".';
+        return 'Project name cannot start with "." or "_".';
     }
 
     if (name.includes(" ")) {
-        return "Le nom du projet ne peut pas contenir d'espaces.";
+        return "Project name cannot contain spaces.";
     }
 
-    // Vérifier les caractères spéciaux non autorisés
+    // Check for invalid special characters
     const invalidChars = /[<>:"/\\|?*]/;
     if (invalidChars.test(name)) {
-        return "Le nom du projet contient des caractères non autorisés.";
+        return "Project name contains invalid characters.";
     }
 
-    // Noms réservés
+    // Reserved names
     const reservedNames = [
         "con",
         "prn",
@@ -52,7 +52,7 @@ export function validateProjectName(name: string): true | string {
     ];
 
     if (reservedNames.includes(name.toLowerCase())) {
-        return `"${name}" est un nom réservé et ne peut pas être utilisé.`;
+        return `"${name}" is a reserved name and cannot be used.`;
     }
 
     return true;
