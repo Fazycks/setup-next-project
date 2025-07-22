@@ -236,11 +236,14 @@ async function openVSCode(projectPath: string): Promise<void> {
 
         spinner.succeed(chalk.green("✅ VS Code opened!"));
 
-        // Close the terminal after VS Code opens
-        console.log(chalk.gray("Closing terminal..."));
+        // Ask user if they want to close the terminal
+        console.log(chalk.cyan("✨ Project setup complete!"));
+        console.log(chalk.gray("You can now close this terminal manually."));
+
+        // Just exit the Node.js process cleanly
         setTimeout(() => {
             process.exit(0);
-        }, 1500); // Wait 1.5 seconds before closing to let user see the success message
+        }, 2000);
     } catch (error) {
         spinner.warn(chalk.yellow("⚠️  Could not open VS Code"));
         console.log(
