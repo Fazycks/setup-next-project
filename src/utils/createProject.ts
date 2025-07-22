@@ -106,6 +106,9 @@ export async function createProject(
         // Update layout.tsx metadata with project name
         await updateLayoutMetadata(projectPath, projectName);
 
+        // Update page.tsx with project name
+        await updateHomePageWithProjectName(projectPath, projectName);
+
         spinner.succeed(chalk.green("Project created successfully!"));
 
         // Git initialization
@@ -195,6 +198,37 @@ async function updateLayoutMetadata(
         } catch (error) {
             // Don't fail the process if layout update fails
             console.log(chalk.gray("Could not update layout metadata"));
+        }
+    }
+}
+
+async function updateHomePageWithProjectName(
+    projectPath: string,
+    projectName: string,
+): Promise<void> {
+    const homePage = path.join(projectPath, "app", "page.tsx");
+
+    if (await fs.pathExists(homePage)) {
+        try {
+            let homeContent = await fs.readFile(homePage, "utf-8");
+
+            // Convert project name to a nice title (capitalize each word, replace hyphens/underscores with spaces)
+            const projectTitle = projectName
+                .replace(/[-_]/g, " ")
+                .split(" ")
+                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                .join(" ");
+
+            // Replace "Welcome to My App" with the project title
+            homeContent = homeContent.replace(
+                '<h1 className="text-2xl font-bold">Welcome to My App</h1>',
+                `<h1 className="text-2xl font-bold">Welcome to ${projectTitle}</h1>`,
+            );
+
+            await fs.writeFile(homePage, homeContent, "utf-8");
+        } catch (error) {
+            // Don't fail the process if homepage update fails
+            console.log(chalk.gray("Could not update homepage title"));
         }
     }
 }
