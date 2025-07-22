@@ -48,16 +48,14 @@ async function copyTemplateFiles(
             await fs.ensureDir(targetItemPath);
             await copyTemplateFiles(sourceItemPath, targetItemPath);
         } else {
-            await fs.copy(sourceItemPath, targetItemPath);
+            // Handle gitignore.template -> .gitignore rename
+            if (item === "gitignore.template") {
+                const gitignoreDestPath = path.join(targetPath, ".gitignore");
+                await fs.copy(sourceItemPath, gitignoreDestPath);
+            } else {
+                await fs.copy(sourceItemPath, targetItemPath);
+            }
         }
-    }
-
-    // Force copy .gitignore explicitly to ensure it's included
-    const gitignoreSrc = path.join(sourcePath, ".gitignore");
-    const gitignoreDest = path.join(targetPath, ".gitignore");
-
-    if (await fs.pathExists(gitignoreSrc)) {
-        await fs.copy(gitignoreSrc, gitignoreDest);
     }
 }
 
