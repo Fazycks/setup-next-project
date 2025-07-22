@@ -33,6 +33,7 @@ export default function RootLayout({
                     geistMono.variable,
                     "antialiased flex flex-col h-full",
                 )}
+                suppressHydrationWarning
             >
                 <Providers>
                     <Header />

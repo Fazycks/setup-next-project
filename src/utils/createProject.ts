@@ -93,6 +93,9 @@ export async function createProject(
 
         spinner.succeed(chalk.green("Projet créé avec succès !"));
 
+        // Initialisation Git
+        await initializeGitRepository(projectPath);
+
         // Installation automatique des dépendances si demandée
         if (options.autoInstall !== false) {
             await installDependencies(projectPath, projectName);
@@ -100,6 +103,44 @@ export async function createProject(
     } catch (error) {
         spinner.fail(chalk.red("Erreur lors de la création du projet"));
         throw error;
+    }
+}
+
+async function initializeGitRepository(projectPath: string): Promise<void> {
+    const spinner = ora("Initialisation du repository Git...").start();
+
+    try {
+        // Initialiser le repo Git
+        await runCommand("git init", projectPath);
+
+        // Ajouter tous les fichiers
+        await runCommand("git add .", projectPath);
+
+        // Faire le premier commit
+        await runCommand(
+            'git commit -m "Initial commit from setup-next-project"',
+            projectPath,
+        );
+
+        spinner.succeed(chalk.green("✅ Repository Git initialisé !"));
+
+        console.log(chalk.cyan("🔗 Prêt pour GitHub Desktop ou push manuel"));
+    } catch (error) {
+        spinner.warn(chalk.yellow("⚠️  Initialisation Git échouée"));
+        console.log(
+            chalk.gray(
+                "Vous pouvez initialiser Git manuellement si nécessaire",
+            ),
+        );
+
+        // Ne pas faire échouer le processus pour une erreur Git
+        console.log(
+            chalk.gray(
+                `Erreur: ${
+                    error instanceof Error ? error.message : String(error)
+                }`,
+            ),
+        );
     }
 }
 
