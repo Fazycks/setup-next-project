@@ -1,6 +1,6 @@
 {
     "name": "setup-next-project",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "description": "CLI to quickly create a pre-configured Next.js project with local templates",
     "type": "module",
     "main": "dist/index.js",

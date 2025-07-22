@@ -29,21 +29,9 @@ export async function getAvailableTemplates(): Promise<Template[]> {
         {
             id: "basic",
             name: "Basic",
-            description: "Next.js with TypeScript and Tailwind CSS",
-            path: path.join(templatesDir, "basic"),
-        },
-        {
-            id: "fullstack",
-            name: "Full Stack",
-            description: "Next.js with Prisma, NextAuth and database",
-            path: path.join(templatesDir, "fullstack"),
-        },
-        {
-            id: "ecommerce",
-            name: "E-commerce",
             description:
-                "E-commerce template with Stripe and product management",
-            path: path.join(templatesDir, "ecommerce"),
+                "Next.js 15 with TypeScript, Tailwind CSS v4, Shadcn UI components and dark/light theme",
+            path: path.join(templatesDir, "basic"),
         },
     ];
 
