@@ -14,12 +14,13 @@ const program = new Command();
 program
     .name("setup-next-project")
     .description("CLI to quickly create a pre-configured Next.js project")
-    .version("1.7.0");
+    .version("1.8.0");
 
 program
     .argument("[project-name]", "Project name")
     .option("-t, --template <template>", "Template to use")
     .option("-y, --yes", "Use default values")
+    .option("--no-code", "Don't open VS Code after installation")
     .action(async (projectName, options) => {
         try {
             console.log(chalk.cyan.bold("\n🚀 Setup Next Project\n"));
@@ -98,6 +99,7 @@ program
                 template: selectedTemplate,
                 projectPath,
                 autoInstall: true, // Installation always enabled
+                openVSCode: options.code !== false, // Open VS Code by default, unless --no-code is specified
             });
 
             // The project is created and dependencies are installed automatically
