@@ -51,6 +51,14 @@ async function copyTemplateFiles(
             await fs.copy(sourceItemPath, targetItemPath);
         }
     }
+
+    // Force copy .gitignore explicitly to ensure it's included
+    const gitignoreSrc = path.join(sourcePath, ".gitignore");
+    const gitignoreDest = path.join(targetPath, ".gitignore");
+
+    if (await fs.pathExists(gitignoreSrc)) {
+        await fs.copy(gitignoreSrc, gitignoreDest);
+    }
 }
 
 export async function createProject(
